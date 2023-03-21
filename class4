@@ -1,0 +1,147 @@
+//ch2-4.c 一元多项式的运算
+# include <stdio.h>
+# include <stdlib.h>
+
+//定义链表结点类型
+typedef struct Node
+{
+	float coef;								//系数
+	int exp;									//指数
+	struct Node *next;							//指针
+}Node;
+
+//根据多项式各项的系数和指数建立链表，返回头指针
+Node * create (int n)
+{
+	Node *head, *s, *rear;
+	int i;
+	head = (Node *) malloc (sizeof (Node));		//生成头结点
+	head -> next = NULL;						//链表为空
+	rear = head;								//尾指针指向头结点
+	for (i = 1; i <= n; i ++)						//顺序生成各个结点
+	{
+		s = (Node *) malloc (sizeof (Node));		//生成新结点
+		printf ("输入第%d项的系数和指数：", i);
+		scanf ("%f  %d", &s -> coef, &s -> exp);
+		rear -> next = s;						//将新结点插入链表末尾
+		rear = s;								//尾指针指向新结点
+}
+rear -> next = NULL;
+return head;								//返回头指针
+}
+
+//输出链表中的数据元素
+void display (Node *head)
+{	
+	Node *p;
+	p = head -> next;							//指针p指向链表中第一个结点
+	while (p)
+	{
+		printf ("(%f, %d)  ", p -> coef, p -> exp);
+		p = p -> next;							//指针p指向下一结点
+}
+printf ("\n");
+}
+
+//两个多项式相加，返回和多项式链表的头指针
+Node *addPolyn (Node *head1, Node *head2)
+{
+	Node *p, *q, *head, *rear, *s;
+	int temp;
+	float sum;
+	p = head1 -> next;						//指针p指向第一个链表的第一个结点
+	q = head2 -> next;						//指针q指向第二个链表的第一个结点
+	head = (Node *) malloc (sizeof (Node));		//生成头结点
+	rear = head;								//尾指针指向头结点
+	while (p && q)
+	{
+		if (p -> exp == q -> exp)					//结点p和结点q的指数相同
+			temp = 0;
+else if (p -> exp < q -> exp)				//结点p的指数小于结点q的指数
+			temp = 1;
+		else 								//结点p的指数大于结点q的指数
+			temp = -1;
+		switch (temp)
+		{
+			case 0:							//结点p和结点q的指数相同时
+				sum = p -> coef + q -> coef;		//系数相加
+				if (sum != 0.0)
+				{
+					s = (Node *) malloc (sizeof (Node));//生成新结点
+					s -> coef = sum;			//新结点的系数等于两个系数和
+					s -> exp = p -> exp;			//新结点的指数等于结点p的指数
+					rear -> next = s;			//将新结点插入新链表末尾
+					rear = s;
+}
+p = p -> next;
+	q = q -> next;
+break;
+			case 1:							//结点p的指数小于结点q的指数
+				s = (Node *) malloc (sizeof (Node));
+				s -> coef = p -> coef;			//新结点的系数等于结点p的系数
+				s -> exp = p -> exp;
+				rear -> next = s;
+				rear = s;
+				p = p -> next;
+				break;
+			case –1:							//结点p的指数大于结点q的指数
+				s = (Node *) malloc (sizeof (Node));
+				s -> coef = q -> coef;			//新结点的系数等于结点p的系数
+				s -> exp = q -> exp;
+				rear -> next = s;
+				rear = s;
+				q = q -> next;
+				break;
+}
+}
+while (p)					//第一个链表未结束时，将剩余结点插入新链表末尾
+{
+		s = (Node *) malloc (sizeof (Node));
+		s -> coef = p -> coef;
+		s -> exp = p -> exp;
+		rear -> next = s;
+		rear = s;
+		p = p -> next;
+}
+while (q)					//第二个链表未结束时，将剩余结点插入新链表末尾
+{
+		s = (Node *) malloc (sizeof (Node));
+		s -> coef = q -> coef;
+		s -> exp = q -> exp;
+		rear -> next = s;
+		rear = s;
+		q = q -> next;
+}
+rear -> next = NULL;
+return head;
+}
+
+void main ()
+{
+	Node *h1, *h2, *h;
+	int m;
+	printf ("输入第一个多项式的项数：");
+	scanf ("%d", &m);
+	h1 = create (m);
+	display (h1);
+	printf ("输入第二个多项式的项数：");
+	scanf ("%d", &m);
+	h2 = create (m);
+	display (h2);
+	printf ("输出和多项式的系数和指数：");
+	h = addPolyn (h1, h2);
+	display (h);
+}
+【程序测试】
+输入第一个多项式的项数：3↙
+输入第1项的系数和指数：1.2 0↙
+输入第2项的系数和指数：4 2↙
+输入第3项的系数和指数：5.6 5↙
+(1.200000, 0)  (4.000000, 2)  (5.600000, 5)
+输入第二个多项式的项数：4↙
+输入第1项的系数和指数：7 1↙
+输入第2项的系数和指数：6.5 2↙
+输入第3项的系数和指数：1 5↙
+输入第4项的系数和指数：1 7↙
+(7.000000, 1)  (6.500000, 2)  (1.000000, 5)  (1.000000, 7)
+输出和多项式的系数和指数：(1.200000, 0)  (7.000000, 1)  (10.500000, 2)  (6.600000, 5)  (1.000000, 7)
